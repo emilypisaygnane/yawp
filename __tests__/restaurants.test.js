@@ -70,7 +70,7 @@ describe('restaurant routes', () => {
 
   it('GET api/v1/restaurants/:id should restaurant details with nested reviews', async () => {
     const res = await request(app).get('/api/v1/restaurants/1');
-    // expect(res.status).toBe(200);
+    expect(res.status).toBe(200);
     expect(res.body).toMatchInlineSnapshot(`
       Object {
         "cost": 1,
@@ -103,7 +103,7 @@ describe('restaurant routes', () => {
     `);
   });
 
-  it.skip('POST /api/v1/restaurants/:id/reviews should create a new review when logged in', async () => {
+  it('POST /api/v1/restaurants/:id/reviews should create a new review when logged in', async () => {
     const [agent] = await registerAndLogin();
     const res = await agent
       .post('/api/v1/restaurants/1/reviews')
@@ -114,6 +114,7 @@ describe('restaurant routes', () => {
         "detail": "This is a new review!!!",
         "id": "4",
         "stars": null,
+        "user_id": null,
       }
     `);
   });
