@@ -2,14 +2,31 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
+const UserService = require('../lib/services/UserService');
+
+const mockUser = {
+  firstName: 'Test',
+  lastName: 'User',
+  email: 'test@example.com',
+  password: '12345',
+};
+
+const registerAndLogin = async (userProps = {}) => {
+  const password = userProps.password ?? mockUser.password;
+  const agent = request.agent(app);
+  const user = await UserService.create({ ...mockUser, ...userProps });
+
+  const { email } = user;
+  await agent.post('/api/v1/users/sessions').send({
+    email, 
+    password 
+  });
+  return [agent, user];
+};
 
 describe('restaurant routes', () => {
   beforeEach(() => {
     return setup(pool);
-  });
-  afterAll(async () => {
-    await setup(pool);
-    pool.end();
   });
 
   it('GET shows a list of restaurants', async () => {
@@ -63,5 +80,25 @@ describe('restaurant routes', () => {
         "status": 500,
       }
     `);
+  });
+
+  it('POST /api/v1/restaurants/1/reviews should create a new review when logged in', async () => {
+    const [agent] = await registerAndLogin();
+    const res = await agent
+      .post('/api/v1/restaurants/1/reviews')
+      .send({ detail: 'New Review' });
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchInlineSnapshot(`
+    Object {
+      "detail": "New Review",
+      "id": "4",
+      "stars": null,
+      "user_id": null,
+    }
+    `);
+  });
+  afterAll(async () => {
+    await setup(pool);
+    pool.end();
   });
 });
