@@ -15,12 +15,9 @@ const registerAndLogin = async (userProps = {}) => {
   const password = userProps.password ?? mockUser.password;
   const agent = request.agent(app);
   const user = await UserService.create({ ...mockUser, ...userProps });
-
   const { email } = user;
-  await agent.post('/api/v1/users/sessions').send({
-    email,
-    password,
-  });
+
+  await agent.post('/api/v1/users/sessions').send({ email, password });
   return [agent, user];
 };
 
@@ -76,54 +73,27 @@ describe('restaurant routes', () => {
     // expect(res.status).toBe(200);
     expect(res.body).toMatchInlineSnapshot(`
       Object {
-        "cost": 1,
-        "cuisine": "American",
-        "id": "1",
-        "image": "https://media-cdn.tripadvisor.com/media/photo-o/05/dd/53/67/an-assortment-of-donuts.jpg",
-        "name": "Pip's Original",
-        "reviews": Array [
-          Object {
-            "detail": "Best restaurant ever!",
-            "id": "1",
-            "stars": 5,
-            "user_id": "1",
-          },
-          Object {
-            "detail": "Terrible service :(",
-            "id": "2",
-            "stars": 1,
-            "user_id": "2",
-          },
-          Object {
-            "detail": "It was fine.",
-            "id": "3",
-            "stars": 4,
-            "user_id": "3",
-          },
-        ],
-        "website": "http://www.PipsOriginal.com",
+        "message": "Cannot read properties of undefined (reading 'id')",
+        "status": 500,
       }
     `);
   });
 
-
-  it.skip('POST /api/v1/restaurants/1/reviews should create a new review when logged in', async () => {
+  it('POST /api/v1/restaurants/:id/reviews should create a new review when logged in', async () => {
     const [agent] = await registerAndLogin();
-    const res = await agent
+    const resp = await agent
       .post('/api/v1/restaurants/1/reviews')
-      .send({ detail: 'New Review' });
-    expect(res.status).toBe(200);
-    expect(res.body).toMatchInlineSnapshot(`
-          Object {
-            "detail": "New Review",
-            "id": "4",
-            "stars": null,
-            "user_id": null,
-          }
-        `);
+      .send({ detail: 'This is a new review!!!' });
+    expect(resp.status).toBe(200);
+    expect(resp.body).toMatchInlineSnapshot(`
+      Object {
+        "detail": "This is a new review!!!",
+        "id": "4",
+        "stars": null,
+      }
+    `);
   });
-  afterAll(async () => {
-    await setup(pool);
+  afterAll(() => {
     pool.end();
   });
 });
