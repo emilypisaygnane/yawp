@@ -12,7 +12,7 @@ describe('backend-express-template routes', () => {
     pool.end();
   });
 
-  it('shows a list of restaurants', async () => {
+  it('GET shows a list of restaurants', async () => {
     const res = await request(app).get('/api/v1/restaurants');
     expect(res.status).toBe(200);
     expect(res.body.length).toBe(4);
@@ -52,5 +52,15 @@ describe('backend-express-template routes', () => {
         },
       ]
     `);
+  });
+
+  it('GET api/v1/restaurants/:restId should restaurant details', async () => {
+    const res = await request(app).get('/api/v1/restaurants/1');
+    expect(res.body).toEqual({
+      id: expect.any(String),
+      name: expect.any(String),
+      cuisine: expect.any(String),
+      reviews: expect.any(Array)
+    });
   });
 });
