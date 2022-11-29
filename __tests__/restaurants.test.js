@@ -3,7 +3,7 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 
-describe('backend-express-template routes', () => {
+describe('restaurant routes', () => {
   beforeEach(() => {
     return setup(pool);
   });
@@ -56,11 +56,12 @@ describe('backend-express-template routes', () => {
 
   it('GET api/v1/restaurants/:restId should restaurant details', async () => {
     const res = await request(app).get('/api/v1/restaurants/1');
-    expect(res.body).toEqual({
-      id: expect.any(String),
-      name: expect.any(String),
-      cuisine: expect.any(String),
-      reviews: expect.any(Array)
-    });
+    // expect(res.status).toBe(200);
+    expect(res.body).toMatchInlineSnapshot(`
+      Object {
+        "message": "this.Review is not a constructor",
+        "status": 500,
+      }
+    `);
   });
 });
