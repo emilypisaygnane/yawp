@@ -81,11 +81,11 @@ describe('restaurant routes', () => {
 
   it('POST /api/v1/restaurants/:id/reviews should create a new review when logged in', async () => {
     const [agent] = await registerAndLogin();
-    const resp = await agent
+    const res = await agent
       .post('/api/v1/restaurants/1/reviews')
       .send({ detail: 'This is a new review!!!' });
-    expect(resp.status).toBe(200);
-    expect(resp.body).toMatchInlineSnapshot(`
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchInlineSnapshot(`
       Object {
         "detail": "This is a new review!!!",
         "id": "4",
@@ -93,6 +93,18 @@ describe('restaurant routes', () => {
       }
     `);
   });
+
+  it('DELETE /api/v1/reviews/:id should delete a review', async () => {
+    const [agent] = await registerAndLogin();
+    const res = await agent
+      .delete('/api/v1/reviews/2');
+    expect(res.status).toBe(204);
+    expect(res.status).toBe(200);
+
+    const reviewRes = await agent.get('/api/v1/reviews/2');
+    expect(reviewRes.status).toBe(404);
+  });
+
   afterAll(() => {
     pool.end();
   });
