@@ -119,7 +119,7 @@ describe('restaurant routes', () => {
     `);
   });
 
-  it.skip('DELETE /api/v1/reviews/:id should delete a review', async () => {
+  it('DELETE /api/v1/reviews/:id should delete a review', async () => {
     const [agent] = await registerAndLogin();
     const res = await agent.delete('/api/v1/reviews/1');
     expect(res.status).toBe(200);
